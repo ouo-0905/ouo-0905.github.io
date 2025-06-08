@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>互動頁面</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    section {
+      max-width: 1000px;
+      margin: auto;
+      padding: 40px 20px;
+    }
+
+    h2 {
+      color: #66ccff;
+      border-bottom: 2px solid #444;
+      padding-bottom: 10px;
+    }
+
+    .box-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px auto;
+      flex-wrap: wrap;
+    }
+
+    .box {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 24px;
+      cursor: pointer;
+      border-radius: 12px;
+      color: #fff;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .box:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 10px #66ccff;
+    }
+
+    #successMessage {
+      display: none;
+      color: lightgreen;
+      font-size: 24px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    #photos {
+      text-align: center;
+    }
+
+    #photos img {
+      margin: 10px;
+      border: 3px solid #ccc;
+      border-radius: 10px;
+      cursor: grab;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    #photos img:active {
+      cursor: grabbing;
+    }
+
+    #photos img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 12px #66ccff;
+    }
+
+    .dragover {
+      background-color: #1a2f40;
+      border: 2px dashed #66ccff;
+    }
+
+    table {
+      margin: 20px auto;
+      border-collapse: separate;
+      border-spacing: 20px;
+      text-align: center;
+    }
+
+    td.level {
+      width: 300px;
+      height: 300px;
+      border: 2px solid #66ccff;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 24px;
+      color: #66ccff;
+      vertical-align: middle;
+      transition: background-color 0.2s;
+    }
+
+    #topBtn {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 99;
+      font-size: 18px;
+      border: none;
+      outline: none;
+      background-color: #66ccff;
+      color: white;
+      cursor: pointer;
+      padding: 15px;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #000;
+      transition: background-color 0.3s;
+    }
+
+    #topBtn:hover {
+      background-color: #559fd6;
+    }
+  </style>
+</head>
+<body>
+
+<button id="topBtn">Top</button>
+
+<section id="interactive">
+  <h2>🎯 點選下方色塊移除（提示：生日）</h2>
+  <div class="box-container" id="boxes">
+    <div class="box">9</div>
+    <div class="box">8</div>
+    <div class="box">7</div>
+    <div class="box">6</div>
+    <div class="box">5</div>
+    <div class="box">4</div>
+    <div class="box">3</div>
+    <div class="box">2</div>
+    <div class="box">1</div>
+  </div>
+  <div id="successMessage">✅ 成功！</div>
+</section>
+
+<section id="drag">
+  <h2>📸 拖曳照片</h2>
+  <div id="photos">
+    <img src="original.jpg" draggable="true" id="photo1" width="115" height="100" alt="照片1" />
+    <img src="original (1).jpg" draggable="true" id="photo2" width="115" height="100" alt="照片2" />
+    <img src="original (2).jpg" draggable="true" id="photo3" width="115" height="100" alt="照片3" />
+    <img src="original (3).jpg" draggable="true" id="photo4" width="115" height="100" alt="照片4" />
+  </div>
+  <table>
+  <tr>
+    <td style="text-align:center; color:#66ccff;">S</td>
+    <td style="text-align:center; color:#66ccff;">A</td>
+    <td style="text-align:center; color:#66ccff;">B</td>
+  </tr>
+  <tr>
+    <td class="level" ondragover="dragOverHandler(event)" ondrop="dropHandler(event)" id="levelS" data-level="S"></td>
+    <td class="level" ondragover="dragOverHandler(event)" ondrop="dropHandler(event)" id="levelA" data-level="A"></td>
+    <td class="level" ondragover="dragOverHandler(event)" ondrop="dropHandler(event)" id="levelB" data-level="B"></td>
+  </tr>
+</table>
+</section>
+
+<script>
+  window.onscroll = () => {
+    document.getElementById("topBtn").style.display = window.scrollY > 200 ? "block" : "none";
+  };
+
+  window.onload = () => {
+    const boxes = document.querySelectorAll(".box");
+    boxes.forEach(box => {
+      const hue = Math.floor(Math.random() * 360);
+      const color = `hsl(${hue}, 70%, 60%)`;
+      box.style.backgroundColor = color;
+      box.setAttribute("data-original-color", color);
+    });
+  };
+
+  const container = document.getElementById("boxes");
+  const successMsg = document.getElementById("successMessage");
+  container.addEventListener("click", function(e) {
+    if (e.target.classList.contains("box")) {
+      const value = e.target.textContent.trim();
+      if (value === "9" || value === "5") {
+        location.reload();
+      } else {
+        e.target.remove();
+        const leftValues = Array.from(container.children).map(b => b.textContent.trim());
+        const removed = ["8","7","6","4","3","2","1"].every(v => !leftValues.includes(v));
+        if (removed) {
+          successMsg.style.display = "block";
+        }
+      }
+    }
+  });
+
+  container.addEventListener("mouseenter", e => {
+    if (e.target.classList.contains("box")) {
+      e.target.style.backgroundColor = "gray";
+    }
+  }, true);
+
+  container.addEventListener("mouseleave", e => {
+    if (e.target.classList.contains("box")) {
+      const originalColor = e.target.getAttribute("data-original-color");
+      e.target.style.backgroundColor = originalColor;
+    }
+  }, true);
+
+  const topBtn = document.getElementById("topBtn");
+  topBtn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
+  const photos = document.querySelectorAll("#photos img");
+  photos.forEach(photo => photo.addEventListener("dragstart", dragStartHandler));
+
+  function dragStartHandler(e) {
+    e.dataTransfer.setData("text/plain", e.target.id);
+  }
+
+  function dragOverHandler(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add("dragover");
+  }
+
+  function dropHandler(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove("dragover");
+    const photoId = e.dataTransfer.getData("text/plain");
+    const draggedPhoto = document.getElementById(photoId);
+    if (draggedPhoto && !e.currentTarget.contains(draggedPhoto)) {
+      e.currentTarget.appendChild(draggedPhoto);
+      draggedPhoto.style.cursor = "default";
+      draggedPhoto.setAttribute("draggable", false);
+    }
+  }
+
+  document.querySelectorAll(".level").forEach(level => {
+    level.addEventListener("dragleave", e => {
+      e.currentTarget.classList.remove("dragover");
+    });
+  });
+</script>
+
+</body>
+</html>
